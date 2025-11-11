@@ -1,73 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Responsys Web Push Test Page</title>
-  <style>
-    body { font-family: Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 0; color: #333; text-align: center; }
-    header { background-color: #0078d7; color: white; padding: 20px 0; }
-    .content { max-width: 800px; margin: 40px auto; background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    footer { margin-top: 50px; padding: 20px 0; background-color: #f1f1f1; color: #666; font-size: 14px; }
-  </style>
-
-  <!-- Responsys Web Push SDK -->
-  <script 
-    type="text/javascript" 
-    id="rsyswpsdk" 
-    src="https://api.pushio.com/webpush/sdk/wpIndex_min.js" 
-    wpconfig='{"appserviceKey":"BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=","apiKey":"ABEWBYcAAX3LV04gEHMQJ2xIs","accountToken":"ABElKaqpK-3l_zDeOp-XArlkg","appver":"0.0.0","apiHost":"https://abr16c0-webpush.oraclersys.com","lazy":false}'>
-  </script>
+    <meta charset="UTF-8">
+    <title>IndexedDB & Service Worker Fix</title>
 </head>
 <body>
+    <h1>IndexedDB & Service Worker Demo</h1>
+    <script>
+        // ---- IndexedDB Fix ----
+        const request = indexedDB.open('myDatabase', 1);
 
-<header>
-  <h1>Responsys Web Push Test Page</h1>
-</header>
+        request.onupgradeneeded = function(event) {
+            const db = event.target.result;
+            if (!db.objectStoreNames.contains('myStore')) {
+                db.createObjectStore('myStore', { keyPath: 'id' });
+            }
+        };
 
-<div class="content">
-  <h2>Welcome to Responsys Web Push Demo</h2>
-  <p>This page tests Responsys Web Push SDK initialization and visitor registration.</p>
-  <p id="visitorIdDisplay">Visitor ID will appear here after registration.</p>
-</div>
+        request.onsuccess = function(event) {
+            const db = event.target.result;
+            const tx = db.transaction('myStore', 'readwrite');
+            const store = tx.objectStore('myStore');
+            store.put({ id: 1, name: 'Bhargav' });
 
-<footer>
-  &copy; 2025 Responsys Web Push Test
-</footer>
+            tx.oncomplete = () => console.log('IndexedDB transaction successful.');
+            tx.onerror = (err) => console.error('IndexedDB transaction failed:', err);
+        };
 
-<script>
-  // Ensure Service Worker is supported
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/webpush-service-worker.js')
-      .then(function(registration) {
-        console.log('Service Worker registered with scope:', registration.scope);
+        request.onerror = function(event) {
+            console.error('IndexedDB error:', event.target.errorCode);
+        };
 
-        // Wait for SDK to load
-        var waitForSDK = setInterval(function() {
-          if (window.webPushManagerAPI) {
-            clearInterval(waitForSDK);
-
-            // Get Visitor ID
-            webPushManagerAPI.getVisitorId().then(function(visitorId) {
-              document.getElementById('visitorIdDisplay').innerText = "Visitor ID: " + visitorId;
-              console.log("Visitor ID:", visitorId);
-            }).catch(function(err) {
-              document.getElementById('visitorIdDisplay').innerText = "Failed to get Visitor ID";
-              console.error("Error fetching Visitor ID:", err);
-            });
-          }
-        }, 200);
-
-      })
-      .catch(function(error) {
-        console.error('Service Worker registration failed:', error);
-        document.getElementById('visitorIdDisplay').innerText = "Service Worker registration failed";
-      });
-  } else {
-    console.warn('Service Worker not supported in this browser.');
-    document.getElementById('visitorIdDisplay').innerText = "Service Worker not supported";
-  }
-</script>
-
+        // ---- Service Worker Fix ----
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/webpush-service-worker.js')
+            .then(reg => console.log('Service Worker registered successfully:', reg))
+            .catch(err => console.error('Service Worker registration failed:', err));
+        }
+    </script>
 </body>
 </html>
