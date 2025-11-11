@@ -44,13 +44,20 @@
 
   <!-- Register Service Worker -->
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/responsys-test-1/service-worker.js')
-        .then(reg => console.log(' Service Worker registered:', reg))
-        .catch(err => console.error(' Service Worker registration failed:', err));
-    } else {
-      console.warn(' Service Workers not supported in this browser.');
-    }
+   navigator.serviceWorker.register('/responsys-test-1/service-worker.js')
+.then(reg => {
+    console.log('✅ Service Worker registered:', reg);
+
+    // Wait a moment for SW activation
+    navigator.serviceWorker.ready.then(() => {
+        console.log('✅ Service Worker active, initializing orawp');
+        orawp.registerForWebPush()
+            .then(() => console.log('Visitor ID:', orawp.getVisitorId()))
+            .catch(err => console.error(err));
+    });
+})
+.catch(err => console.error('❌ Service Worker registration failed:', err));
+
   </script>
 
   <!-- Wait for orawp SDK and register visitor -->
@@ -82,4 +89,5 @@
 
 </body>
 </html>
+
 
