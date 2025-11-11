@@ -20,13 +20,14 @@
   <div class="content">
     <h2>Welcome to Responsys Web Push Demo</h2>
     <p>This page tests Responsys Web Push SDK initialization and registration.</p>
+    <p id="visitorIdDisplay">Visitor ID will appear here after registration.</p>
   </div>
 
   <footer>
     &copy; 2025 Responsys Web Push Test
   </footer>
 
-  <!-- Load the correct Responsys SDK -->
+  <!-- Load the Responsys SDK -->
   <script
     type="text/javascript"
     id="rsyswpsdk"
@@ -41,34 +42,40 @@
     }'>
   </script>
 
-  <!-- Check for SDK readiness -->
+  <!-- Wait for orawp to load and register visitor -->
   <script>
     let checkCount = 0;
     const checkOrawp = setInterval(() => {
       if (typeof orawp !== "undefined") {
         clearInterval(checkOrawp);
-        console.log(" orawp is loaded:", orawp);
+        console.log("✅ orawp SDK loaded:", orawp);
 
         orawp.registerForWebPush()
-          .then(() => console.log(" Web Push Registration Success"))
-          .catch(err => console.error(" Web Push Registration Failed:", err));
+          .then(() => {
+            const visitorId = orawp.getVisitorId();
+            console.log("✅ Web Push Registration Success. Visitor ID:", visitorId);
+            document.getElementById("visitorIdDisplay").textContent = `Visitor ID: ${visitorId}`;
+          })
+          .catch(err => console.error("❌ Web Push Registration Failed:", err));
       } else {
         checkCount++;
-        console.log(" Waiting for orawp...");
+        console.log("⏳ Waiting for orawp...");
         if (checkCount > 20) {
           clearInterval(checkOrawp);
-          console.error(" Timeout waiting for orawp SDK to load.");
+          console.error("❌ Timeout waiting for orawp SDK to load.");
         }
       }
     }, 1000);
   </script>
 
-  <!-- Register service worker -->
+  <!-- Register Service Worker -->
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js')
-        .then(reg => console.log(' Service Worker registered:', reg))
-        .catch(err => console.error(' Service Worker registration failed:', err));
+        .then(reg => console.log('✅ Service Worker registered:', reg))
+        .catch(err => console.error('❌ Service Worker registration failed:', err));
+    } else {
+      console.warn('⚠️ Service Workers not supported in this browser.');
     }
   </script>
 
