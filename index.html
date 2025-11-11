@@ -15,48 +15,51 @@
   <h1>Responsys Web Push Demo</h1>
   <p class="visitor" id="visitorIdDisplay">Visitor ID will appear here after registration.</p>
 
+  <!-- Load Responsys Web Push SDK -->
+  <script
+    type="text/javascript"
+    id="rsyswpsdk"
+    src="https://api.pushio.com/webpush/sdk/wpIndex_min.js"
+    wpconfig='{
+      "appserviceKey": "BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=",
+      "apiKey": "ABEWBYcAAX3LV04gEHMQJ2xIs",
+      "accountToken": "ABElKaqpK-3l_zDeOp-XArlkg",
+      "apiHost": "https://abr16c0-webpush.oraclersys.com",
+      "appver": "1.0.0",
+      "lazy": false
+    }'>
+  </script>
+
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-
-      //  Register the Service Worker
+      // 1️⃣ Register Service Worker
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('service-worker.js')
-          .then(() => console.log(' Service Worker registered'))
-          .catch(err => console.error(' Service Worker registration failed:', err));
+          .then(() => {
+            console.log('✅ Service Worker registered');
+
+            // 2️⃣ Wait for orawp SDK to load
+            const checkSDK = setInterval(() => {
+              if (typeof orawp !== "undefined") {
+                clearInterval(checkSDK);
+
+                // 3️⃣ Register for Web Push
+                orawp.registerForWebPush()
+                  .then(() => {
+                    const visitorId = orawp.getVisitorId();
+                    console.log('✅ Visitor ID:', visitorId);
+                    document.getElementById("visitorIdDisplay").textContent = `Visitor ID: ${visitorId}`;
+                  })
+                  .catch(err => console.error('❌ Web Push registration failed:', err));
+
+              }
+            }, 500);
+
+          })
+          .catch(err => console.error('❌ Service Worker registration failed:', err));
       } else {
         console.warn('⚠️ Service Workers not supported in this browser.');
       }
-
-      //  Load the Responsys SDK dynamically to ensure DOM exists
-      const sdkScript = document.createElement("script");
-      sdkScript.id = "rsyswpsdk";
-      sdkScript.src = "https://api.pushio.com/webpush/sdk/wpIndex_min.js";
-      sdkScript.type = "text/javascript";
-      sdkScript.setAttribute("wpconfig", JSON.stringify({
-        appserviceKey: "BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=",
-        apiKey: "ABEWBYcAAX3LV04gEHMQJ2xIs",
-        accountToken: "ABElKaqpK-3l_zDeOp-XArlkg",
-        apiHost: "https://abr16c0-webpush.oraclersys.com",
-        appver: "1.0.0",
-        lazy: false
-      }));
-      document.body.appendChild(sdkScript);
-
-      //  Wait for SDK to load and then register for Web Push
-      const checkSDK = setInterval(() => {
-        if (typeof orawp !== "undefined") {
-          clearInterval(checkSDK);
-
-          orawp.registerForWebPush()
-            .then(() => {
-              const visitorId = orawp.getVisitorId();
-              console.log(' Visitor ID:', visitorId);
-              document.getElementById("visitorIdDisplay").textContent = `Visitor ID: ${visitorId}`;
-            })
-            .catch(err => console.error(' Web Push registration failed:', err));
-        }
-      }, 500);
-
     });
   </script>
 
