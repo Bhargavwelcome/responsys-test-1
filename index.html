@@ -1,44 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Responsys Web Push Test</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Responsys Web Push Demo</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f8fafc; color: #333; text-align: center; padding: 40px; }
+    h1 { color: #0078d7; }
+    .visitor { margin-top: 20px; font-size: 1.2em; }
+  </style>
 </head>
 <body>
-<h1>Responsys Web Push Demo</h1>
-<p id="visitorIdDisplay">Visitor ID will appear here after registration.</p>
 
-<script src="https://api.pushio.com/webpush/sdk/wpIndex_min.js"
-wpconfig='{
-  "appserviceKey": "BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=",
-  "apiKey": "ABEWBYcAAX3LV04gEHMQJ2xIs",
-  "accountToken": "ABElKaqpK-3l_zDeOp-XArlkg",
-  "apiHost": "https://abr16c0-webpush.oraclersys.com",
-  "appver": "1.0.0",
-  "lazy": false
-}'>
-</script>
+  <h1>Responsys Web Push Demo</h1>
+  <p class="visitor" id="visitorIdDisplay">Visitor ID will appear here after registration.</p>
 
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('service-worker.js')
-    .then(() => {
-      console.log('Service Worker registered');
-      const waitSDK = setInterval(() => {
-        if (typeof orawp !== "undefined") {
-          clearInterval(waitSDK);
-          orawp.registerForWebPush()
-            .then(() => {
-              document.getElementById("visitorIdDisplay").textContent =
-                `Visitor ID: ${orawp.getVisitorId()}`;
-            })
-            .catch(console.error);
-        }
-      }, 500);
-    })
-    .catch(console.error);
-}
-</script>
+  <!-- Load Responsys Web Push SDK -->
+  <script
+    type="text/javascript"
+    id="rsyswpsdk"
+    src="https://api.pushio.com/webpush/sdk/wpIndex_min.js"
+    wpconfig='{
+      "appserviceKey": "BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=",
+      "apiKey": "ABEWBYcAAX3LV04gEHMQJ2xIs",
+      "accountToken": "ABElKaqpK-3l_zDeOp-XArlkg",
+      "apiHost": "https://abr16c0-webpush.oraclersys.com",
+      "appver": "1.0.0",
+      "lazy": false
+    }'>
+  </script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Register Service Worker
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js')
+          .then(() => {
+            console.log(' Service Worker registered');
+
+            // Wait for orawp SDK to load
+            const checkSDK = setInterval(() => {
+              if (typeof orawp !== "undefined") {
+                clearInterval(checkSDK);
+                orawp.registerForWebPush()
+                  .then(() => {
+                    const visitorId = orawp.getVisitorId();
+                    console.log(' Visitor ID:', visitorId);
+                    document.getElementById("visitorIdDisplay").textContent = `Visitor ID: ${visitorId}`;
+                  })
+                  .catch(err => console.error(' Web Push registration failed:', err));
+              }
+            }, 500);
+
+          })
+          .catch(err => console.error(' Service Worker registration failed:', err));
+      } else {
+        console.warn(' Service Workers not supported in this browser.');
+      }
+    });
+  </script>
+
 </body>
 </html>
