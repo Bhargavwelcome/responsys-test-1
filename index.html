@@ -15,7 +15,7 @@
   <h1>Responsys Web Push Demo</h1>
   <p class="visitor" id="visitorIdDisplay">Visitor ID will appear here after registration.</p>
 
-  <!-- Load Responsys Web Push SDK -->
+  <!-- 1️⃣ Load Responsys Web Push SDK first -->
   <script
     type="text/javascript"
     id="rsyswpsdk"
@@ -30,40 +30,31 @@
     }'>
   </script>
 
+  <!-- 2️⃣ Wait for SDK, then register Service Worker and Web Push -->
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      // 1️⃣ Register Service Worker
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/responsys-test-1/service-worker.js')
+    const waitSDK = setInterval(() => {
+      if (typeof orawp !== "undefined") {
+        clearInterval(waitSDK);
+
+        // Register Service Worker (adjust path to match your GitHub repo)
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('service-worker.js')
+            .then(reg => console.log('✅ Service Worker registered:', reg))
+            .catch(err => console.error('❌ Service Worker registration failed:', err));
+        }
+
+        // Register visitor for Web Push
+        orawp.registerForWebPush()
           .then(() => {
-            console.log('✅ Service Worker registered');
-
-            // 2️⃣ Wait for orawp SDK to load
-            const checkSDK = setInterval(() => {
-              if (typeof orawp !== "undefined") {
-                clearInterval(checkSDK);
-
-                // 3️⃣ Register for Web Push
-                orawp.registerForWebPush()
-                  .then(() => {
-                    const visitorId = orawp.getVisitorId();
-                    console.log('✅ Visitor ID:', visitorId);
-                    document.getElementById("visitorIdDisplay").textContent = `Visitor ID: ${visitorId}`;
-                  })
-                  .catch(err => console.error('❌ Web Push registration failed:', err));
-
-              }
-            }, 500);
-
+            const visitorId = orawp.getVisitorId();
+            console.log('Visitor ID:', visitorId);
+            document.getElementById("visitorIdDisplay").textContent = `Visitor ID: ${visitorId}`;
           })
-          .catch(err => console.error('❌ Service Worker registration failed:', err));
-      } else {
-        console.warn('⚠️ Service Workers not supported in this browser.');
+          .catch(err => console.error('Web Push registration failed:', err));
+
       }
-    });
+    }, 500);
   </script>
 
 </body>
 </html>
-
-
