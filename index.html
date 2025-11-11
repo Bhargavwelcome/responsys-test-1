@@ -10,21 +10,6 @@
     .content { max-width: 800px; margin: 40px auto; background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
     footer { margin-top: 50px; padding: 20px 0; background-color: #f1f1f1; color: #666; font-size: 14px; }
   </style>
-    <!-- Load the Responsys SDK -->
-  <script
-    type="text/javascript"
-    id="rsyswpsdk"
-    src="https://api.pushio.com/webpush/sdk/wpIndex_min.js"
-    wpconfig='{
-      "appserviceKey": "BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=",
-      "apiKey": "ABEWBYcAAX3LV04gEHMQJ2xIs",
-      "accountToken": "ABElKaqpK-3l_zDeOp-XArlkg",
-      "apiHost": "https://abr16c0-webpush.oraclersys.com",
-      "appver": "1.0.0",
-      "lazy": false
-    }'>
-  </script>
-  
 </head>
 <body>
 
@@ -42,9 +27,58 @@
     &copy; 2025 Responsys Web Push Test
   </footer>
 
+  <!-- Load the Web Push SDK -->
+  <script
+    type="text/javascript"
+    id="rsyswpsdk"
+    src="https://api.pushio.com/webpush/sdk/wpIndex_min.js"
+    wpconfig='{
+      "appserviceKey": "BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=",
+      "apiKey": "ABEWBYcAAX3LV04gEHMQJ2xIs",
+      "accountToken": "ABElKaqpK-3l_zDeOp-XArlkg",
+      "apiHost": "https://abr16c0-webpush.oraclersys.com",
+      "appver": "1.0.0",
+      "lazy": false
+    }'>
+  </script>
 
+  <!-- Register Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(reg => console.log('✅ Service Worker registered:', reg))
+        .catch(err => console.error('❌ Service Worker registration failed:', err));
+    } else {
+      console.warn('⚠️ Service Workers not supported in this browser.');
+    }
+  </script>
 
+  <!-- Wait for orawp SDK and register visitor -->
+  <script>
+    let checkCount = 0;
+    const checkOrawp = setInterval(() => {
+      if (typeof orawp !== "undefined") {
+        clearInterval(checkOrawp);
+        console.log("✅ orawp SDK loaded");
+
+        // Register the visitor
+        orawp.registerForWebPush()
+          .then(() => {
+            const visitorId = orawp.getVisitorId();
+            console.log("✅ Web Push Registration Success. Visitor ID:", visitorId);
+            document.getElementById("visitorIdDisplay").textContent = `Visitor ID: ${visitorId}`;
+          })
+          .catch(err => console.error("❌ Web Push Registration Failed:", err));
+      } else {
+        checkCount++;
+        console.log("⏳ Waiting for orawp SDK...");
+        if (checkCount > 20) {
+          clearInterval(checkOrawp);
+          console.error("❌ Timeout waiting for orawp SDK to load.");
+        }
+      }
+    }, 1000);
+  </script>
 
 </body>
 </html>
-
