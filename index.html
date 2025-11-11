@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Responsys Static Test Page</title>
+  <title>Responsys Web Push Test Page</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -46,15 +46,28 @@
 
   <div class="content">
     <h2>Welcome to Responsys Web Push Demo</h2>
-    <p>This page is used to test Responsys Web Push SDK initialization.</p>
+    <p>This page is used to verify successful integration with Oracle Responsys Web Push SDK.</p>
+    <p>If you open the browser console, you should see logs from the SDK after successful initialization.</p>
   </div>
 
   <footer>
     &copy; 2025 Responsys Web Push Test
   </footer>
 
- <script type='text/javascript' id='rsyswpsdk' src='https://api.pushio.com/webpush/sdk/wpIndex_min.js' wpconfig = '{"appserviceKey":"BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=","apiKey":"ABEWBYcAAX3LV04gEHMQJ2xIs","accountToken":"ABElKaqpK-3l_zDeOp-XArlkg","appver":"0.0.0","apiHost":"https://abr16c0-webpush.oraclersys.com","lazy":false}'></script>
+  <!--  Only this script is needed for Responsys Web Push -->
+  <script
+    type="text/javascript"
+    id="rsyswpsdk"
+    src="https://api.pushio.com/webpush/sdk/wpIndex_min.js"
+    wpconfig='{
+      "appserviceKey": "BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=",
+      "apiKey": "ABEWBYcAAX3LV04gEHMQJ2xIs",
+      "accountToken": "ABElKaqpK-3l_zDeOp-XArlkg",
+      "appver": "0.0.0",
+      "apiHost": "https://abr16c0-webpush.oraclersys.com",
+      "lazy": false
+    }'>
+  </script>
 
 </body>
 </html>
-
