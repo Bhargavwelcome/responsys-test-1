@@ -72,24 +72,20 @@
       lazy: false
     };
 
-    // Step 1: Register the service worker first
+    // Register Service Worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js')
-        .then(function (registration) {
+        .then((registration) => {
           console.log(' Service Worker registered:', registration);
           return navigator.serviceWorker.ready;
         })
-        .then(function () {
-          console.log(' Service Worker is active, initializing SDK...');
-          // Step 2: Initialize the Responsys SDK after SW is ready
+        .then(() => {
+          console.log(' Service Worker active — initializing Responsys SDK...');
           orawp.init(config);
-          orawp.registerForWebPush()
-            .then(() => console.log(" Visitor registered successfully"))
-            .catch(err => console.error(" Registration failed", err));
+          return orawp.registerForWebPush();
         })
-        .catch(function (error) {
-          console.error(' Service Worker registration failed:', error);
-        });
+        .then(() => console.log(" Visitor registered successfully"))
+        .catch(err => console.error(" Registration failed:", err));
     } else {
       console.warn(' Service Workers not supported in this browser.');
     }
