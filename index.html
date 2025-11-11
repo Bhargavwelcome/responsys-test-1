@@ -10,8 +10,6 @@
     .content { max-width: 800px; margin: 40px auto; background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
     footer { margin-top: 50px; padding: 20px 0; background-color: #f1f1f1; color: #666; font-size: 14px; }
   </style>
-
-  
 </head>
 <body>
 
@@ -29,8 +27,28 @@
   &copy; 2025 Responsys Web Push Test
 </footer>
 
-<script type='text/javascript' id='rsyswpsdk' src='https://api.pushio.com/webpush/sdk/wpIndex_min.js' wpconfig = '{"appserviceKey":"BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=","apiKey":"ABEWBYcAAX3LV04gEHMQJ2xIs","accountToken":"ABElKaqpK-3l_zDeOp-XArlkg","appver":"0.0.0","apiHost":"https://abr16c0-webpush.oraclersys.com","lazy":false}'></script>
+<!-- Responsys Web Push SDK -->
+<script type='text/javascript' id='rsyswpsdk' src='https://api.pushio.com/webpush/sdk/wpIndex_min.js' wpconfig='{"appserviceKey":"BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=","apiKey":"ABEWBYcAAX3LV04gEHMQJ2xIs","accountToken":"ABElKaqpK-3l_zDeOp-XArlkg","appver":"0.0.0","apiHost":"https://abr16c0-webpush.oraclersys.com","lazy":false}'></script>
+
+<!-- Display Visitor ID after SDK loads -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Wait a few milliseconds to ensure SDK is loaded
+    setTimeout(function() {
+        if (window.webPushManagerAPI) {
+            webPushManagerAPI.getVisitorId().then(function(visitorId) {
+                document.getElementById('visitorIdDisplay').innerText = "Visitor ID: " + visitorId;
+                console.log("Visitor ID:", visitorId);
+            }).catch(function(err) {
+                document.getElementById('visitorIdDisplay').innerText = "Failed to get Visitor ID";
+                console.error("Error fetching Visitor ID:", err);
+            });
+        } else {
+            document.getElementById('visitorIdDisplay').innerText = "Web Push SDK not loaded yet";
+        }
+    }, 500); // slight delay for SDK initialization
+});
+</script>
+
 </body>
 </html>
-
-
