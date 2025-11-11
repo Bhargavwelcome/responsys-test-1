@@ -50,46 +50,20 @@
   </footer>
 
   <!-- ✅ Load Responsys SDK first -->
-  <script id="rsyswpsdk"
-          src="https://api.pushio.com/webpush/sdk/client_min.js"
-          defer></script>
+ <script
+  type="text/javascript"
+  id="rsyswpsdk"
+  src="https://api.pushio.com/webpush/sdk/wpIndex_min.js"
+  wpconfig='{
+    "appserviceKey": "BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=",
+    "apiKey": "ABEWBYcAAX3LV04gEHMQJ2xIs",
+    "accountToken": "ABElKaqpK-3l_zDeOp-XArlkg",
+    "apiHost": "https://abr16c0-webpush.oraclersys.com",
+    "appver": "1.0.0",
+    "lazy": false
+  }'>
+</script>
 
-  <script>
-    window.addEventListener('load', () => {
-      // Wait until SDK is loaded
-      const checkOrStart = () => {
-        if (typeof orawp !== 'undefined') {
-          console.log("✅ Responsys SDK loaded");
-
-          const config = {
-            appserviceKey: "BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=",
-            apiKey: "ABEWBYcAAX3LV04gEHMQJ2xIs",
-            accountToken: "ABElKaqpK-3l_zDeOp-XArlkg",
-            apiHost: "https://abr16c0-webpush.oraclersys.com",
-            appver: "1.0.0",
-            lazy: false
-          };
-
-          try {
-            orawp.init(config);
-            console.log("✅ orawp initialized");
-
-            orawp.registerForWebPush()
-              .then(() => console.log("✅ Web push registration successful"))
-              .catch(err => console.error("❌ Registration failed:", err));
-
-          } catch (e) {
-            console.error("❌ orawp init error:", e);
-          }
-        } else {
-          console.log("⏳ Waiting for orawp...");
-          setTimeout(checkOrStart, 300); // retry until SDK loads
-        }
-      };
-
-      checkOrStart();
-    });
-  </script>
 
   <script>
     // ✅ Register Service Worker
@@ -102,3 +76,4 @@
 
 </body>
 </html>
+
