@@ -19,59 +19,64 @@
 
 <div class="content">
   <h2>Welcome to Responsys Web Push Demo</h2>
+  <p>This page tests Responsys Web Push SDK initialization and visitor registration.</p>
   <p id="visitorIdDisplay">Visitor ID will appear here after registration.</p>
 </div>
 
-<footer>&copy; 2025 Responsys Web Push Test</footer>
+<footer>
+  &copy; 2025 Responsys Web Push Test
+</footer>
 
-<!-- Load SDK -->
-<script src="https://api.pushio.com/webpush/sdk/wpIndex_min.js" 
-wpconfig='{
-  "appserviceKey":"<your_appserviceKey>",
-  "apiKey":"<your_apiKey>",
-  "accountToken":"<your_accountToken>",
-  "apiHost":"https://abr16c0-webpush.oraclersys.com",
-  "appver":"1.0.0",
-  "lazy":false
-}'>
+<!-- Load the Responsys SDK -->
+<script
+  type="text/javascript"
+  src="https://api.pushio.com/webpush/sdk/wpIndex_min.js"
+  wpconfig='{
+    "appserviceKey":"BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=",
+    "apiKey":"ABEWBYcAAX3LV04gEHMQJ2xIs",
+    "accountToken":"ABElKaqpK-3l_zDeOp-XArlkg",
+    "apiHost":"https://abr16c0-webpush.oraclersys.com",
+    "appver":"1.0.0",
+    "lazy":true
+  }'>
 </script>
 
+<!-- Register Service Worker -->
 <script>
-async function initPush() {
-  try {
-    if (!('serviceWorker' in navigator)) {
-      console.error('⚠️ Service Workers not supported');
-      return;
-    }
-
-    // Register Service Worker first
-    const reg = await navigator.serviceWorker.register('service-worker.js');
-    console.log('✅ Service Worker registered:', reg);
-
-    // Wait until orawp is defined
-    let attempts = 0;
-    while (typeof orawp === 'undefined' && attempts < 20) {
-      await new Promise(r => setTimeout(r, 500));
-      attempts++;
-    }
-    if (typeof orawp === 'undefined') {
-      console.error('❌ orawp SDK not loaded');
-      return;
-    }
-
-    // Register for Web Push
-    await orawp.registerForWebPush();
-    const visitorId = orawp.getVisitorId();
-    console.log('✅ Visitor ID:', visitorId);
-    document.getElementById('visitorIdDisplay').textContent = `Visitor ID: ${visitorId}`;
-
-  } catch (err) {
-    console.error('❌ Push init failed:', err);
-  }
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('webpush-service-worker.js')
+    .then(reg => console.log('✅ Service Worker registered:', reg))
+    .catch(err => console.error('❌ Service Worker registration failed:', err));
+} else {
+  console.warn('⚠️ Service Workers not supported in this browser.');
 }
+</script>
 
-// Run initialization
-initPush();
+<!-- Wait for orawp SDK and register visitor -->
+<script>
+let checkCount = 0;
+const checkOrawp = setInterval(() => {
+  if (typeof orawp !== "undefined") {
+    clearInterval(checkOrawp);
+    console.log("✅ orawp SDK loaded");
+
+    // Register visitor and display Visitor ID
+    orawp.registerForWebPush()
+      .then(() => {
+        const visitorId = orawp.getVisitorId();
+        console.log("✅ Web Push Registration Success. Visitor ID:", visitorId);
+        document.getElementById("visitorIdDisplay").textContent = `Visitor ID: ${visitorId}`;
+      })
+      .catch(err => console.error("❌ Web Push Registration Failed:", err));
+  } else {
+    checkCount++;
+    console.log("⏳ Waiting for orawp SDK...");
+    if (checkCount > 20) {
+      clearInterval(checkOrawp);
+      console.error("❌ Timeout waiting for orawp SDK to load.");
+    }
+  }
+}, 1000);
 </script>
 
 </body>
