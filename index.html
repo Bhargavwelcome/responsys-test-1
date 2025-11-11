@@ -53,48 +53,8 @@
     &copy; 2025 Responsys Web Push Test
   </footer>
 
-  <!-- Load Responsys Web Push SDK -->
-  <script src="https://api.pushio.com/webpush/sdk/client_min.js"></script>
-
-  <script>
-    // Ensure we only initialize once
-    if (typeof window.orawpInitialized === "undefined") {
-      window.orawpInitialized = true;
-
-      const config = {
-        appserviceKey: "BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=",
-        apiKey: "ABEWBYcAAX3LV04gEHMQJ2xIs",
-        accountToken: "ABElKaqpK-3l_zDeOp-XArlkg",
-        apiHost: "https://abr16c0-webpush.oraclersys.com",
-        appver: "1.0.0",
-        lazy: false
-      };
-
-      try {
-        orawp.init(config);
-        console.log("✅ orawp initialized");
-
-        orawp.registerForWebPush()
-          .then(() => console.log("✅ Web push registration successful"))
-          .catch(err => console.error("❌ Registration failed:", err));
-      } catch (err) {
-        console.error("❌ orawp init error:", err);
-      }
-    } else {
-      console.warn("⚠️ orawp already initialized — skipping duplicate init.");
-    }
-  </script>
-
-  <script>
-    // Service Worker registration
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(reg => console.log('✅ Service Worker registered:', reg))
-        .catch(err => console.error('❌ Service Worker registration failed:', err));
-    } else {
-      console.warn('⚠️ Service Workers not supported in this browser.');
-    }
-  </script>
+ <script type='text/javascript' id='rsyswpsdk' src='https://api.pushio.com/webpush/sdk/wpIndex_min.js' wpconfig = '{"appserviceKey":"BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=","apiKey":"ABEWBYcAAX3LV04gEHMQJ2xIs","accountToken":"ABElKaqpK-3l_zDeOp-XArlkg","appver":"0.0.0","apiHost":"https://abr16c0-webpush.oraclersys.com","lazy":false}'></script>
 
 </body>
 </html>
+
