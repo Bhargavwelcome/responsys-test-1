@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Responsys Web Push Test Page</title>
+  <title>Responsys Web Push Test</title>
   <style>
     body {
       font-family: Arial, sans-serif;
       background-color: #f8fafc;
       margin: 0;
       padding: 0;
-      color: #333;
       text-align: center;
     }
     header {
@@ -26,15 +25,12 @@
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    h2 {
-      color: #0078d7;
-    }
     footer {
-      margin-top: 50px;
-      padding: 20px 0;
-      background-color: #f1f1f1;
-      color: #666;
+      margin-top: 40px;
+      padding: 10px;
+      background: #f1f1f1;
       font-size: 14px;
+      color: #666;
     }
   </style>
 </head>
@@ -45,28 +41,63 @@
   </header>
 
   <div class="content">
-    <h2>Welcome to Responsys Web Push Demo</h2>
-    <p>This page is used to verify successful integration with Oracle Responsys Web Push SDK.</p>
-    <p>If you open the browser console, you should see logs from the SDK after successful initialization.</p>
+    <h2>Welcome!</h2>
+    <p>This page tests the Responsys Web Push SDK initialization.</p>
   </div>
 
   <footer>
     &copy; 2025 Responsys Web Push Test
   </footer>
 
-  <!--  Only this script is needed for Responsys Web Push -->
-  <script
-    type="text/javascript"
-    id="rsyswpsdk"
-    src="https://api.pushio.com/webpush/sdk/wpIndex_min.js"
-    wpconfig='{
-      "appserviceKey": "BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=",
-      "apiKey": "ABEWBYcAAX3LV04gEHMQJ2xIs",
-      "accountToken": "ABElKaqpK-3l_zDeOp-XArlkg",
-      "appver": "0.0.0",
-      "apiHost": "https://abr16c0-webpush.oraclersys.com",
-      "lazy": false
-    }'>
+  <!-- ✅ Load Responsys SDK first -->
+  <script id="rsyswpsdk"
+          src="https://api.pushio.com/webpush/sdk/client_min.js"
+          defer></script>
+
+  <script>
+    window.addEventListener('load', () => {
+      // Wait until SDK is loaded
+      const checkOrStart = () => {
+        if (typeof orawp !== 'undefined') {
+          console.log("✅ Responsys SDK loaded");
+
+          const config = {
+            appserviceKey: "BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=",
+            apiKey: "ABEWBYcAAX3LV04gEHMQJ2xIs",
+            accountToken: "ABElKaqpK-3l_zDeOp-XArlkg",
+            apiHost: "https://abr16c0-webpush.oraclersys.com",
+            appver: "1.0.0",
+            lazy: false
+          };
+
+          try {
+            orawp.init(config);
+            console.log("✅ orawp initialized");
+
+            orawp.registerForWebPush()
+              .then(() => console.log("✅ Web push registration successful"))
+              .catch(err => console.error("❌ Registration failed:", err));
+
+          } catch (e) {
+            console.error("❌ orawp init error:", e);
+          }
+        } else {
+          console.log("⏳ Waiting for orawp...");
+          setTimeout(checkOrStart, 300); // retry until SDK loads
+        }
+      };
+
+      checkOrStart();
+    });
+  </script>
+
+  <script>
+    // ✅ Register Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(reg => console.log('✅ Service Worker registered:', reg))
+        .catch(err => console.error('❌ Service Worker registration failed:', err));
+    }
   </script>
 
 </body>
