@@ -49,6 +49,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 500); // slight delay for SDK initialization
 });
 </script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/webpush-service-worker.js')
+    .then(function(registration) {
+      console.log('Service Worker registered with scope:', registration.scope);
+    })
+    .catch(function(error) {
+      console.error('Service Worker registration failed:', error);
+    });
+  } else {
+    console.warn('Service Worker is not supported in this browser.');
+  }
+</script>
+
 
 </body>
 </html>
+
