@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Responsys Static Test Page</title>
+  <title>Responsys Web Push Test Page</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -26,12 +26,6 @@
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    img {
-      width: 100%;
-      max-width: 600px;
-      border-radius: 10px;
-      margin-top: 20px;
-    }
     h2 {
       color: #0078d7;
     }
@@ -52,65 +46,54 @@
 <body>
 
   <header>
-    <h1>Responsys Web App Test Page</h1>
+    <h1>Responsys Web Push Test Page</h1>
   </header>
 
   <div class="content">
-    <h2>Welcome to the Static Content Test</h2>
-    <p>This page contains only text and images. You can use it to test Responsys web app content rendering or HTML uploads.</p>
-
-    
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent euismod, justo at dapibus porttitor, velit lorem cursus elit, eget lacinia enim nisl vel libero.</p>
-
-    
-
-    <p>Phasellus sed ligula nec mi vulputate accumsan. Duis fringilla ipsum id viverra dapibus. Suspendisse potenti. Donec sagittis justo sit amet risus mattis tincidunt.</p>
+    <h2>Welcome!</h2>
+    <p>This static page tests Oracle Responsys Web Push SDK integration via Service Worker on GitHub Pages.</p>
+    <p>After you allow notifications, check Responsys → Web Push → Visitors tab for registration.</p>
   </div>
 
   <footer>
-    &copy; 2025 Responsys Test Content Page
+    &copy; 2025 Responsys Test Page | Created for Demo Testing
   </footer>
 
-<script src="https://api.pushio.com/webpush/sdk/client_min.js"></script>
-<script>
-  const config = {
-    appserviceKey: "BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=",
-    apiKey: "ABEWBYcAAX3LV04gEHMQJ2xIs",
-    accountToken: "ABElKaqpK-3l_zDeOp-XArlkg",
-    apiHost: "https://abr16c0-webpush.oraclersys.com",
-    appver: "0.0.0",
-    lazy: false
-  };
-  
-  orawp.init(config);
-  
-  // This is crucial
-  orawp.registerForWebPush()
-    .then(() => console.log("✅ Visitor registered successfully"))
-    .catch(err => console.error("❌ Registration failed", err));
-</script>
+  <!-- Load the Responsys Web Push client SDK -->
+  <script src="https://api.pushio.com/webpush/sdk/client_min.js"></script>
 
+  <script>
+    const config = {
+      appserviceKey: "BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=",
+      apiKey: "ABEWBYcAAX3LV04gEHMQJ2xIs",
+      accountToken: "ABElKaqpK-3l_zDeOp-XArlkg",
+      apiHost: "https://abr16c0-webpush.oraclersys.com",
+      appver: "0.0.0",
+      lazy: false
+    };
 
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(function(registration) {
-        console.log(' Service Worker registered:', registration);
-      })
-      .catch(function(error) {
-        console.error(' Service Worker registration failed:', error);
-      });
-  } else {
-    console.warn('Service Workers are not supported in this browser.');
-  }
-</script>
+    // Step 1: Register the service worker first
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(function (registration) {
+          console.log(' Service Worker registered:', registration);
+          return navigator.serviceWorker.ready;
+        })
+        .then(function () {
+          console.log(' Service Worker is active, initializing SDK...');
+          // Step 2: Initialize the Responsys SDK after SW is ready
+          orawp.init(config);
+          orawp.registerForWebPush()
+            .then(() => console.log(" Visitor registered successfully"))
+            .catch(err => console.error(" Registration failed", err));
+        })
+        .catch(function (error) {
+          console.error(' Service Worker registration failed:', error);
+        });
+    } else {
+      console.warn(' Service Workers not supported in this browser.');
+    }
+  </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
