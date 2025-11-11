@@ -3,35 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Responsys Web Push Test</title>
+  <title>Responsys Web Push Test Page</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f8fafc;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
-    header {
-      background-color: #0078d7;
-      color: white;
-      padding: 20px 0;
-    }
-    .content {
-      max-width: 800px;
-      margin: 40px auto;
-      background-color: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    footer {
-      margin-top: 40px;
-      padding: 10px;
-      background: #f1f1f1;
-      font-size: 14px;
-      color: #666;
-    }
+    body { font-family: Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 0; color: #333; text-align: center; }
+    header { background-color: #0078d7; color: white; padding: 20px 0; }
+    .content { max-width: 800px; margin: 40px auto; background-color: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    footer { margin-top: 50px; padding: 20px 0; background-color: #f1f1f1; color: #666; font-size: 14px; }
   </style>
 </head>
 <body>
@@ -41,39 +18,59 @@
   </header>
 
   <div class="content">
-    <h2>Welcome!</h2>
-    <p>This page tests the Responsys Web Push SDK initialization.</p>
+    <h2>Welcome to Responsys Web Push Demo</h2>
+    <p>This page tests Responsys Web Push SDK initialization and registration.</p>
   </div>
 
   <footer>
     &copy; 2025 Responsys Web Push Test
   </footer>
 
-  <!-- ✅ Load Responsys SDK first -->
- <script
-  type="text/javascript"
-  id="rsyswpsdk"
-  src="https://api.pushio.com/webpush/sdk/wpIndex_min.js"
-  wpconfig='{
-    "appserviceKey": "BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=",
-    "apiKey": "ABEWBYcAAX3LV04gEHMQJ2xIs",
-    "accountToken": "ABElKaqpK-3l_zDeOp-XArlkg",
-    "apiHost": "https://abr16c0-webpush.oraclersys.com",
-    "appver": "1.0.0",
-    "lazy": false
-  }'>
-</script>
+  <!-- Load the correct Responsys SDK -->
+  <script
+    type="text/javascript"
+    id="rsyswpsdk"
+    src="https://api.pushio.com/webpush/sdk/wpIndex_min.js"
+    wpconfig='{
+      "appserviceKey": "BBfCgd8DzPawmPJgGJy8decXP1TJvDczsIpA0wqk961Xjb3auyJ9qMC2JwPT6XiRK429JsCDtWRgyLoaujPeGmE=",
+      "apiKey": "ABEWBYcAAX3LV04gEHMQJ2xIs",
+      "accountToken": "ABElKaqpK-3l_zDeOp-XArlkg",
+      "apiHost": "https://abr16c0-webpush.oraclersys.com",
+      "appver": "1.0.0",
+      "lazy": false
+    }'>
+  </script>
 
-
+  <!-- Check for SDK readiness -->
   <script>
-    // ✅ Register Service Worker
+    let checkCount = 0;
+    const checkOrawp = setInterval(() => {
+      if (typeof orawp !== "undefined") {
+        clearInterval(checkOrawp);
+        console.log(" orawp is loaded:", orawp);
+
+        orawp.registerForWebPush()
+          .then(() => console.log(" Web Push Registration Success"))
+          .catch(err => console.error(" Web Push Registration Failed:", err));
+      } else {
+        checkCount++;
+        console.log(" Waiting for orawp...");
+        if (checkCount > 20) {
+          clearInterval(checkOrawp);
+          console.error(" Timeout waiting for orawp SDK to load.");
+        }
+      }
+    }, 1000);
+  </script>
+
+  <!-- Register service worker -->
+  <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js')
-        .then(reg => console.log('✅ Service Worker registered:', reg))
-        .catch(err => console.error('❌ Service Worker registration failed:', err));
+        .then(reg => console.log(' Service Worker registered:', reg))
+        .catch(err => console.error(' Service Worker registration failed:', err));
     }
   </script>
 
 </body>
 </html>
-
